@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🤖 KnightBot-MD
+# 🤖 MD-KuttuBot
 
 **A fast, lightweight WhatsApp bot built on Baileys**
 
@@ -15,7 +15,7 @@
 
 ## 📌 About
 
-KnightBot-MD is a clean, minimal WhatsApp bot powered by the [Baileys](https://github.com/WhiskeySockets/Baileys) library.  
+MD-KuttuBot is a clean, minimal WhatsApp bot powered by the [Baileys](https://github.com/WhiskeySockets/Baileys) library.  
 It focuses on **downloader commands** and **group utilities** — no bloat, no unused code.
 
 ---
@@ -30,6 +30,7 @@ It focuses on **downloader commands** and **group utilities** — no bloat, no u
 | 📸 Instagram | `.insta` `.instagram` |
 | 📘 Facebook | `.fb` `.facebook` |
 | 👥 Group | `.tagall` |
+| 🔒 Owner | `.mode` |
 
 ---
 
@@ -56,6 +57,13 @@ It focuses on **downloader commands** and **group utilities** — no bloat, no u
 |---|---|
 | `.tagall` | Mention all group members *(Admin only)* |
 
+### 🔒 Owner
+| Command | Description |
+|---|---|
+| `.mode public` | Allow everyone to use commands |
+| `.mode private` | Restrict commands to owner/sudo only |
+| `.mode` | Check current mode |
+
 ---
 
 ## ⚙️ Requirements
@@ -71,8 +79,8 @@ It focuses on **downloader commands** and **group utilities** — no bloat, no u
 ### 1. Clone or extract the project
 
 ```bash
-git clone https://github.com/mruniquehacker/Knightbot-MD.git
-cd Knightbot-MD
+git clone https://github.com/GouthamJosh/md-kuttubot.git
+cd md-kuttubot
 ```
 
 ### 2. Install dependencies
@@ -81,34 +89,44 @@ cd Knightbot-MD
 npm install
 ```
 
-### 3. Configure your settings
+### 3. Get your Session ID
+
+> **You must generate a session before starting the bot.**
+
+👉 Open the session scanner: **[https://qrkuttubotmd-0hef.onrender.com/](https://qrkuttubotmd-0hef.onrender.com/)**
+
+1. Enter your WhatsApp number (with country code, no `+`)
+2. A **pairing code** will be displayed
+3. On your phone: WhatsApp → Settings → Linked Devices → Link a Device → enter the code
+4. Your `session/` credentials will be saved automatically
+
+> ⚠️ Keep your session folder safe. Never share it publicly.
+
+### 4. Configure your settings
 
 Open `settings.js` and set your details:
 
 ```js
 const settings = {
-  botName:     "Knight Bot",       // Bot display name
-  botOwner:    "Your Name",        // Your name
+  botName:     "MD-KuttuBot",      // Bot display name
+  botOwner:    "Goutham Josh",     // Your name
   ownerNumber: "919876543210",     // Your number (with country code, no + or spaces)
   version:     "3.0.7",
 };
 ```
 
-### 4. Start the bot
+### 5. Start the bot
 
 ```bash
 npm start
 ```
-
-On first run you will be prompted for your WhatsApp number to generate a **pairing code**.  
-Open WhatsApp → Settings → Linked Devices → Link a Device → enter the code.
 
 ---
 
 ## 📁 Project Structure
 
 ```
-KnightBot-MD/
+md-kuttubot/
 │
 ├── commands/          # Command handlers
 │   ├── alive.js
@@ -195,10 +213,10 @@ Switch modes with:
 
 | Key | Description | Example |
 |---|---|---|
-| `botName` | Bot display name | `"Knight Bot"` |
-| `botOwner` | Owner name | `"Professor"` |
+| `botName` | Bot display name | `"MD-KuttuBot"` |
+| `botOwner` | Owner name | `"Goutham Josh"` |
 | `ownerNumber` | Owner phone (no + or spaces) | `"919876543210"` |
-| `packname` | Sticker pack name | `"Knight Bot"` |
+| `packname` | Sticker pack name | `"MD-KuttuBot"` |
 | `version` | Bot version | `"3.0.7"` |
 
 ---
@@ -207,7 +225,8 @@ Switch modes with:
 
 **Bot not connecting?**
 - Make sure your `session/` folder has valid credentials
-- Delete the `session/` folder and re-pair if needed
+- Regenerate session at [https://qrkuttubotmd-0hef.onrender.com/](https://qrkuttubotmd-0hef.onrender.com/)
+- Delete the `session/` folder and re-scan if needed
 
 **Downloads failing?**
 - Check your internet connection on the server
@@ -232,13 +251,12 @@ This project is licensed under the **MIT License** — free to use, modify, and 
 ## 🙏 Credits
 
 - **Baileys** — WhatsApp Web API library by [@adiwajshing](https://github.com/adiwajshing)
-- **Original bot** — [KnightBot-MD](https://github.com/mruniquehacker/Knightbot-MD) by Mr Unique Hacker
-- **YT Channel** — [Mr Unique Hacker](https://youtube.com)
+- **Session Scanner** — [qrkuttubotmd-0hef.onrender.com](https://qrkuttubotmd-0hef.onrender.com/)
 
 ---
 
 <div align="center">
 
-**Made with ❤️ by Mr Unique Hacker**
+**Made with ❤️ by Goutham Josh**
 
 </div>
