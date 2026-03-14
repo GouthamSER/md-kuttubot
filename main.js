@@ -187,6 +187,47 @@ async function handleMessages(sock, messageUpdate, printLog) {
                 await videoCommand(sock, chatId, message);
                 break;
 
+            // Mode — switch public/private (owner only)
+            case userMessage.startsWith('.mode'): {
+                if (!message.key.fromMe && !senderIsOwnerOrSudo) {
+                    await sock.sendMessage(chatId, { text: '\u274c Only the bot owner can use .mode!', ...channelInfo }, { quoted: message });
+                    break;
+                }
+                let modeData;
+                try { modeData = JSON.parse(fs.readFileSync('./data/messageCount.json')); }
+                catch (_) { modeData = {}; }
+
+                const modeArg = userMessage.split(' ')[1]?.toLowerCase();
+
+                if (!modeArg) {
+                    const current = modeData.isPublic === false ? 'private' : 'public';
+                    await sock.sendMessage(chatId, {
+                        text: `\u2699\ufe0f *Bot Mode*\n\nCurrent mode: *${current}*\n\nUsage:\n\u2022 .mode public \u2014 allow everyone\n\u2022 .mode private \u2014 owner only`,
+                        ...channelInfo
+                    }, { quoted: message });
+                    break;
+                }
+
+                if (modeArg !== 'public' && modeArg !== 'private') {
+                    await sock.sendMessage(chatId, { text: '\u274c Invalid. Use: .mode public OR .mode private', ...channelInfo }, { quoted: message });
+                    break;
+                }
+
+                modeData.isPublic = (modeArg === 'public');
+                try {
+                    fs.writeFileSync('./data/messageCount.json', JSON.stringify(modeData, null, 2));
+                    const icon = modeArg === 'public' ? '\ud83c\udf10' : '\ud83d\udd12';
+                    const desc = modeArg === 'public' ? 'Everyone can now use commands.' : 'Only owner/sudo can use commands.';
+                    await sock.sendMessage(chatId, {
+                        text: `\u2705 Bot mode set to *${modeArg}*\n\n${icon} ${desc}`,
+                        ...channelInfo
+                    }, { quoted: message });
+                } catch (_) {
+                    await sock.sendMessage(chatId, { text: '\u274c Failed to save mode. Check data folder.', ...channelInfo }, { quoted: message });
+                }
+                break;
+            }
+
             // Unknown command
             default:
                 // Silently ignore unknown commands

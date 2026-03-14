@@ -31,6 +31,12 @@ async function helpCommand(sock, chatId, message) {
 ╚══════════════════════╝
 
 ╔══════════════════════╗
+🔒 *Owner Commands*
+║ ➤ .mode public   — Allow everyone
+║ ➤ .mode private  — Owner only
+╚══════════════════════╝
+
+╔══════════════════════╗
 👥 *Group Commands*
 ║ ➤ .tagall  — Mention all members
 ║             (Admin only)
