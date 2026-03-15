@@ -1,3 +1,4 @@
+const settings = require('../settings');
 const axios = require('axios');
 const { cleanTemp } = require('../lib/cleanTemp');
 
@@ -116,7 +117,7 @@ async function facebookCommand(sock, chatId, message) {
             return;
         }
 
-        const caption = `📘 *${videoData.title}*\n\n> _Downloaded by Knight Bot_`;
+        const caption = `📘 *${videoData.title}*\n\n> _Downloaded by ${settings.botName}_`;
 
         // ✅ Send the video
         await sock.sendMessage(chatId, {

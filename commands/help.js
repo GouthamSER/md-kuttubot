@@ -5,7 +5,7 @@ const path = require('path');
 async function helpCommand(sock, chatId, message) {
     const helpMessage = `
 ╔══════════════════════╗
-   *🤖 ${settings.botName || 'KnightBot-MD'}*
+   *🤖 ${settings.botName || settings.botName}*
    Version: *${settings.version || '3.0.0'}*
    by ${settings.botOwner || 'Mr Unique Hacker'}
 ╚══════════════════════╝
@@ -26,7 +26,8 @@ async function helpCommand(sock, chatId, message) {
 ║ ➤ .play  <song name>   — Audio (MP3)
 ║ ➤ .song  <song name>   — Audio (MP3)
 ║ ➤ .video <name/URL>    — Video (MP4)
-║ ➤ .insta <link>        — Instagram media
+║ ➤ .insta <link>        — Instagram post/reel
+║ ➤ .story <@user/URL>   — Instagram stories
 ║ ➤ .fb    <link>        — Facebook video
 ╚══════════════════════╝
 
@@ -42,7 +43,7 @@ async function helpCommand(sock, chatId, message) {
 ║             (Admin only)
 ╚══════════════════════╝
 
-> Powered by *KnightBot-MD*`;
+> Powered by *${settings.botName}*`;
 
     try {
         const imagePath = path.join(__dirname, '../assets/bot_image.jpg');
@@ -57,7 +58,7 @@ async function helpCommand(sock, chatId, message) {
                     isForwarded: true,
                     forwardedNewsletterMessageInfo: {
                         newsletterJid: '120363161513685998@newsletter',
-                        newsletterName: 'KnightBot MD',
+                        newsletterName: settings.botName,
                         serverMessageId: -1
                     }
                 }
@@ -70,7 +71,7 @@ async function helpCommand(sock, chatId, message) {
                     isForwarded: true,
                     forwardedNewsletterMessageInfo: {
                         newsletterJid: '120363161513685998@newsletter',
-                        newsletterName: 'KnightBot MD',
+                        newsletterName: settings.botName,
                         serverMessageId: -1
                     }
                 }
