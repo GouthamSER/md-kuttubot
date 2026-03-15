@@ -15,8 +15,8 @@
 
 ## 📌 About
 
-MD-KuttuBot is a clean, minimal WhatsApp bot powered by the [Baileys](https://github.com/WhiskeySockets/Baileys) library.  
-It focuses on **downloader commands** and **group utilities** — no bloat, no unused code.
+MD-KuttuBot is a clean, minimal WhatsApp bot powered by [Baileys](https://github.com/WhiskeySockets/Baileys).  
+It focuses on **high-quality downloaders** and **group utilities** — no bloat, no unused code.
 
 ---
 
@@ -25,10 +25,10 @@ It focuses on **downloader commands** and **group utilities** — no bloat, no u
 | Category | Commands |
 |---|---|
 | 📡 General | `.ping` `.alive` `.help` `.menu` `.list` |
-| 🎵 Audio Download | `.song` `.play` |
-| 🎬 Video Download | `.video` |
-| 📸 Instagram | `.insta` `.instagram` |
-| 📘 Facebook | `.fb` `.facebook` |
+| 🎵 Audio | `.song` `.play` |
+| 🎬 Video | `.video` |
+| 📸 Instagram | `.insta` |
+| 📘 Facebook | `.fb` |
 | 👥 Group | `.tagall` |
 | 🔒 Owner | `.mode` |
 
@@ -37,6 +37,7 @@ It focuses on **downloader commands** and **group utilities** — no bloat, no u
 ## 📋 Commands
 
 ### 📡 General
+
 | Command | Description |
 |---|---|
 | `.ping` | Check bot response speed and uptime |
@@ -44,25 +45,47 @@ It focuses on **downloader commands** and **group utilities** — no bloat, no u
 | `.help` / `.menu` / `.list` | Show all available commands |
 
 ### 📥 Downloaders
+
 | Command | Description |
 |---|---|
-| `.song <name or URL>` | Download audio as MP3 (multi-API fallback) |
-| `.play <name>` | Download audio via Keith API |
-| `.video <name or URL>` | Download YouTube video as MP4 |
-| `.insta <link>` | Download Instagram post, reel, or video |
+| `.song <name or URL>` | Download audio as MP3 |
+| `.play <name>` | Download audio via alternate source |
+| `.video <name or URL>` | Download YouTube video — up to **1080p** |
+| `.insta <link>` | Download Instagram post, reel, or carousel |
 | `.fb <link>` | Download Facebook video (HD preferred) |
 
 ### 👥 Group
+
 | Command | Description |
 |---|---|
 | `.tagall` | Mention all group members *(Admin only)* |
 
 ### 🔒 Owner
+
 | Command | Description |
 |---|---|
 | `.mode public` | Allow everyone to use commands |
-| `.mode private` | Restrict commands to owner/sudo only |
+| `.mode private` | Restrict to owner/sudo only |
 | `.mode` | Check current mode |
+
+---
+
+## 🎬 Video Quality
+
+The `.video` command uses a **two-stage quality chain**:
+
+**Stage 1 — ytdl-core (direct YouTube, highest quality)**
+```
+1080p → 720p → 480p → 360p
+```
+- For 720p and above, video and audio streams are downloaded separately then merged using **FFmpeg**
+- Gives the best possible quality with no third-party dependency
+
+**Stage 2 — API fallback (if ytdl-core fails)**
+```
+EliteProTech → Yupra → Okatsu
+```
+- Automatically retries each API up to 3 times before moving on
 
 ---
 
@@ -86,10 +109,24 @@ cd md-kuttubot
 ### 2. Install dependencies
 
 ```bash
-npm install
+npm install --legacy-peer-deps --ignore-scripts
 ```
 
-### 3. Get your Session ID
+### 3. Install FFmpeg
+
+**Ubuntu / Debian / Termux:**
+```bash
+sudo apt install ffmpeg
+# or on Termux:
+pkg install ffmpeg
+```
+
+**Verify:**
+```bash
+ffmpeg -version
+```
+
+### 4. Get your Session ID
 
 > **You must generate a session before starting the bot.**
 
@@ -102,20 +139,19 @@ npm install
 
 > ⚠️ Keep your session folder safe. Never share it publicly.
 
-### 4. Configure your settings
+### 5. Configure settings
 
-Open `settings.js` and set your details:
+Open `settings.js` and fill in your details:
 
 ```js
 const settings = {
-  botName:     "MD-KuttuBot",      // Bot display name
-  botOwner:    "Goutham Josh",     // Your name
-  ownerNumber: "919876543210",     // Your number (with country code, no + or spaces)
-  version:     "3.0.7",
+  botName:     "MD-KuttuBot",
+  botOwner:    "Your Name",
+  ownerNumber: "919876543210",   // country code + number, no + or spaces
 };
 ```
 
-### 5. Start the bot
+### 6. Start the bot
 
 ```bash
 npm start
@@ -128,36 +164,35 @@ npm start
 ```
 md-kuttubot/
 │
-├── commands/          # Command handlers
-│   ├── alive.js
-│   ├── facebook.js
-│   ├── help.js
-│   ├── instagram.js
-│   ├── ping.js
-│   ├── play.js
-│   ├── song.js
-│   ├── tagall.js
-│   └── video.js
+├── commands/
+│   ├── alive.js          # .alive
+│   ├── facebook.js       # .fb
+│   ├── help.js           # .help / .menu / .list
+│   ├── instagram.js      # .insta (posts, reels, carousels)
+│   ├── ping.js           # .ping
+│   ├── play.js           # .play
+│   ├── song.js           # .song
+│   ├── tagall.js         # .tagall
+│   └── video.js          # .video (up to 1080p)
 │
-├── lib/               # Core utilities
-│   ├── cleanTemp.js   # Auto temp file cleaner
-│   ├── converter.js   # FFmpeg audio/video converter
+├── lib/
+│   ├── cleanTemp.js      # Auto temp file cleanup
+│   ├── converter.js      # FFmpeg audio/video helpers
 │   ├── isAdmin.js
 │   ├── isBanned.js
-│   ├── isOwner.js
-│   └── ...
+│   └── isOwner.js
 │
-├── data/              # Persistent JSON data
+├── data/
 │   ├── banned.json
 │   ├── messageCount.json
 │   └── owner.json
 │
-├── session/           # WhatsApp session credentials (auto-generated)
-├── temp/              # Temp files (auto-cleaned after every download)
-├── assets/            # Bot images
-├── index.js           # Entry point & WhatsApp connection
-├── main.js            # Message handler & command router
-├── settings.js        # Bot configuration
+├── session/              # WhatsApp credentials (auto-generated)
+├── temp/                 # Temp files (auto-deleted after every download)
+├── assets/               # Bot images
+├── index.js              # Entry point & WhatsApp connection
+├── main.js               # Message handler & command router
+├── settings.js           # Bot configuration
 └── package.json
 ```
 
@@ -165,16 +200,14 @@ md-kuttubot/
 
 ## 🔄 How Downloaders Work
 
-Each downloader uses a **multi-API fallback chain** — if the first API fails, it automatically tries the next:
-
 **Audio (`.song` / `.play`)**
 ```
 EliteProTech → Yupra → Okatsu
 ```
 
-**Video (`.video`)**
+**Video (`.video`) — with quality**
 ```
-EliteProTech → Yupra → Okatsu
+ytdl-core (1080p/720p/480p, ffmpeg merge) → EliteProTech → Yupra → Okatsu
 ```
 
 **Facebook (`.fb`)**
@@ -184,13 +217,13 @@ Hanggts → Snapsave → Getmyfb
 
 **Instagram (`.insta`)**
 ```
-ruhend-scraper (handles posts, reels, stories, carousels)
+ruhend-scraper (posts, reels, carousels)
 ```
 
 ### 🧹 Auto Temp Cleanup
 
-Every download command **immediately deletes all temp files** after sending — both on success and on error.  
-This keeps your server storage clean with zero leftover files.
+Every download **immediately deletes all temp files** after sending, on both success and failure.  
+This keeps server storage clean with zero leftover files.
 
 ---
 
@@ -201,7 +234,7 @@ This keeps your server storage clean with zero leftover files.
 | `public` | Anyone can use commands |
 | `private` | Only owner/sudo can use commands |
 
-Switch modes with:
+Switch with:
 ```
 .mode public
 .mode private
@@ -209,13 +242,13 @@ Switch modes with:
 
 ---
 
-## 🔧 Configuration (`settings.js`)
+## 🔧 Configuration Reference (`settings.js`)
 
 | Key | Description | Example |
 |---|---|---|
-| `botName` | Bot display name | `"MD-KuttuBot"` |
+| `botName` | Display name | `"MD-KuttuBot"` |
 | `botOwner` | Owner name | `"Goutham Josh"` |
-| `ownerNumber` | Owner phone (no + or spaces) | `"919876543210"` |
+| `ownerNumber` | Phone number (no + or spaces) | `"919876543210"` |
 | `packname` | Sticker pack name | `"MD-KuttuBot"` |
 | `version` | Bot version | `"3.0.7"` |
 
@@ -224,21 +257,31 @@ Switch modes with:
 ## 🐛 Troubleshooting
 
 **Bot not connecting?**
-- Make sure your `session/` folder has valid credentials
-- Regenerate session at [https://qrkuttubotmd-0hef.onrender.com/](https://qrkuttubotmd-0hef.onrender.com/)
-- Delete the `session/` folder and re-scan if needed
+- Make sure `session/` has valid credentials
+- Regenerate at [https://qrkuttubotmd-0hef.onrender.com/](https://qrkuttubotmd-0hef.onrender.com/)
+- Delete `session/` folder and re-pair if needed
+
+**`.video` downloading low quality?**
+- Make sure **FFmpeg is installed** — it's required for 720p/1080p merging
+- Verify: `ffmpeg -version`
+- If FFmpeg is missing, the bot falls back to API sources which may give lower quality
 
 **Downloads failing?**
-- Check your internet connection on the server
-- Some content may be region-blocked (the bot will notify you)
-- Try a different search term or URL
+- Check internet connection on the server
+- Some content may be region-blocked (bot will notify you)
+- YouTube frequently updates — if ytdl-core fails, API fallback will kick in automatically
 
 **FFmpeg errors?**
-- Install FFmpeg: `sudo apt install ffmpeg` (Linux) or download from [ffmpeg.org](https://ffmpeg.org)
-- Verify with: `ffmpeg -version`
+```bash
+# Ubuntu/Debian
+sudo apt install ffmpeg
+
+# Termux
+pkg install ffmpeg
+```
 
 **Tagall not working?**
-- Make sure the bot is added as a **group admin**
+- The bot must be a **group admin**
 
 ---
 
@@ -250,7 +293,8 @@ This project is licensed under the **MIT License** — free to use, modify, and 
 
 ## 🙏 Credits
 
-- **Baileys** — WhatsApp Web API library by [@adiwajshing](https://github.com/adiwajshing)
+- **Baileys** — WhatsApp Web API by [@WhiskeySockets](https://github.com/WhiskeySockets/Baileys)
+- **ytdl-core** — YouTube stream downloader
 - **Session Scanner** — [qrkuttubotmd-0hef.onrender.com](https://qrkuttubotmd-0hef.onrender.com/)
 
 ---
