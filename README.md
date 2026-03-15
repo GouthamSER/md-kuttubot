@@ -132,7 +132,7 @@ ffmpeg -version
 
 👉 Open the session scanner: **[https://qrkuttubotmd-0hef.onrender.com/](https://qrkuttubotmd-0hef.onrender.com/)**
 
-1. Enter your WhatsApp number (with country code, no `+`)
+1. Enter your WhatsApp number (with country code, `+`)
 2. A **pairing code** will be displayed
 3. On your phone: WhatsApp → Settings → Linked Devices → Link a Device → enter the code
 4. Your `session/` credentials will be saved automatically
