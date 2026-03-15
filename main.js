@@ -1,5 +1,4 @@
-// KnightBot-MD — Clean build (9 commands only)
-// Commands: .video .play .song .insta .ping .alive .list .help .tagall
+// MD-KuttuBot — Clean build
 
 const fs = require('fs');
 const path = require('path');
@@ -38,7 +37,7 @@ const tagAllCommand    = require('./commands/tagall');
 const helpCommand      = require('./commands/help');
 const pingCommand      = require('./commands/ping');
 const aliveCommand     = require('./commands/alive');
-const instagramCommand = require('./commands/instagram');
+const { instagramCommand, storyCommand } = require('./commands/instagram');
 const facebookCommand  = require('./commands/facebook');
 const playCommand      = require('./commands/play');
 const songCommand      = require('./commands/song');
@@ -56,7 +55,7 @@ const channelInfo = {
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
             newsletterJid: '120363161513685998@newsletter',
-            newsletterName: 'KnightBot MD',
+            newsletterName: settings.botName,
             serverMessageId: -1
         }
     }
@@ -160,6 +159,11 @@ async function handleMessages(sock, messageUpdate, printLog) {
                  userMessage === '.ig'                ||
                  userMessage.startsWith('.ig '):
                 await instagramCommand(sock, chatId, message);
+                break;
+
+            // Story downloader
+            case userMessage.startsWith('.story'):
+                await storyCommand(sock, chatId, message);
                 break;
 
             // Facebook downloader
