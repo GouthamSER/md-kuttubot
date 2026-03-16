@@ -2,6 +2,7 @@ const axios = require('axios');
 const yts   = require('yt-search');
 const { toAudio }   = require('../lib/converter');
 const { cleanTemp } = require('../lib/cleanTemp');
+const { downloadContentFromMessage } = require('@whiskeysockets/baileys');
 
 const AXIOS_DEFAULTS = {
     timeout: 60000,
@@ -10,6 +11,24 @@ const AXIOS_DEFAULTS = {
         'Accept': 'application/json, text/plain, */*'
     }
 };
+
+// Helper function to download media from quoted message
+async function downloadQuotedMedia(quotedMsg) {
+    try {
+        const messageType = Object.keys(quotedMsg)[0];
+        const stream = await downloadContentFromMessage(quotedMsg[messageType], messageType.replace('Message', ''));
+        
+        let buffer = Buffer.from([]);
+        for await (const chunk of stream) {
+            buffer = Buffer.concat([buffer, chunk]);
+        }
+        
+        return buffer;
+    } catch (error) {
+        console.error('[SONG] Media download error:', error);
+        throw error;
+    }
+}
 
 async function tryRequest(fn, attempts = 3) {
     let lastErr;
@@ -85,8 +104,66 @@ async function songCommand(sock, chatId, message) {
         const rawText    = message.message?.conversation || message.message?.extendedTextMessage?.text || '';
         const searchQuery = rawText.split(' ').slice(1).join(' ').trim();
 
+        // Check if replying to a video message
+        const quotedMessage = message.message?.extendedTextMessage?.contextInfo?.quotedMessage;
+        const hasQuotedVideo = quotedMessage?.videoMessage;
+
+        // Case 1: User replied to a video with .mp3 or .song
+        if (hasQuotedVideo) {
+            await sock.sendMessage(chatId, { 
+                text: '🎵 Converting video to MP3...' 
+            }, { quoted: message });
+
+            try {
+                // Download the video from the quoted message
+                const videoBuffer = await downloadQuotedMedia(quotedMessage);
+                
+                if (!videoBuffer || videoBuffer.length === 0) {
+                    await sock.sendMessage(chatId, { 
+                        text: '❌ Failed to download video!' 
+                    }, { quoted: message });
+                    return;
+                }
+
+                // Get filename from caption or use default
+                const videoMsg = quotedMessage.videoMessage;
+                const fileName = videoMsg.caption?.replace(/[^\w\s-]/g, '').substring(0, 50) || 'converted_audio';
+                
+                // Convert video to MP3
+                console.log('[SONG] Converting video to MP3...');
+                const mp3Buffer = await toAudio(videoBuffer, 'mp4');
+                
+                if (!mp3Buffer?.length) {
+                    throw new Error('Conversion failed');
+                }
+
+                // Send MP3
+                await sock.sendMessage(chatId, {
+                    audio: mp3Buffer,
+                    mimetype: 'audio/mpeg',
+                    fileName: fileName + '.mp3',
+                    ptt: false
+                }, { quoted: message });
+
+                console.log('[SONG] Sent MP3:', (mp3Buffer.length / 1048576).toFixed(1), 'MB');
+                cleanTemp();
+                return;
+
+            } catch (convertErr) {
+                console.error('[SONG] Video conversion error:', convertErr);
+                await sock.sendMessage(chatId, { 
+                    text: '❌ Failed to convert video to MP3!' 
+                }, { quoted: message });
+                cleanTemp();
+                return;
+            }
+        }
+
+        // Case 2: Normal YouTube download (no video reply)
         if (!searchQuery) {
-            await sock.sendMessage(chatId, { text: '🎵 Usage: .song <song name or YouTube link>' }, { quoted: message });
+            await sock.sendMessage(chatId, { 
+                text: '🎵 *Usage:*\n\n1️⃣ Reply to a video with .mp3\n2️⃣ .mp3 <song name or YouTube link>' 
+            }, { quoted: message });
             return;
         }
 

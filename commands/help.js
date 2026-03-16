@@ -25,10 +25,14 @@ async function helpCommand(sock, chatId, message) {
 📥 *Downloader*
 ║ ➤ .play  <song name>   — Audio (MP3)
 ║ ➤ .song  <song name>   — Audio (MP3)
+║ ➤ .mp3   <name/reply>  — YouTube/Video→MP3
 ║ ➤ .video <name/URL>    — Video (MP4)
-║ ➤ .insta <link>        — Instagram post/reel
+║ ➤ .tomp3 <video/URL>   — Video → MP3
+║ ➤ .insta <link(s)>     — Instagram post/reel
 ║ ➤ .story <@user/URL>   — Instagram stories
 ║ ➤ .fb    <link>        — Facebook video
+║ ➤ .tiktok <link>       — TikTok video
+║ ➤ .pinterest <query>   — Pinterest search
 ╚══════════════════════╝
 
 ╔══════════════════════╗

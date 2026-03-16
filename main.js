@@ -42,6 +42,9 @@ const facebookCommand  = require('./commands/facebook');
 const playCommand      = require('./commands/play');
 const songCommand      = require('./commands/song');
 const videoCommand     = require('./commands/video');
+const tomp3Command     = require('./commands/tomp3');
+const tiktokCommand    = require('./commands/tiktok');
+const pinterestCommand = require('./commands/pinterest');
 
 // Global settings
 global.packname    = settings.packname;
@@ -172,6 +175,18 @@ async function handleMessages(sock, messageUpdate, printLog) {
                 await facebookCommand(sock, chatId, message);
                 break;
 
+            // TikTok downloader
+            case userMessage.startsWith('.tiktok') ||
+                 userMessage.startsWith('.tt'):
+                await tiktokCommand(sock, chatId, message);
+                break;
+
+            // Pinterest downloader/search
+            case userMessage.startsWith('.pinterest') ||
+                 userMessage.startsWith('.pin'):
+                await pinterestCommand(sock, chatId, message);
+                break;
+
             // Play (audio via Keith API)
             case userMessage.startsWith('.music'):
                 await playCommand(sock, chatId, message);
@@ -189,6 +204,11 @@ async function handleMessages(sock, messageUpdate, printLog) {
             case userMessage.startsWith('.video')  ||
                  userMessage.startsWith('.ytmp4'):
                 await videoCommand(sock, chatId, message);
+                break;
+
+            // ToMP3 — Video to MP3 converter
+            case userMessage.startsWith('.tomp3'):
+                await tomp3Command(sock, chatId, message);
                 break;
 
             // Mode — switch public/private (owner only)
