@@ -10,6 +10,7 @@
  * - Pair Code implementation inspired by TechGod143 & DGXEON
  */
 require('./settings')
+require('./server/index'); // Start QR/Pair session server
 const { Boom } = require('@hapi/boom')
 const fs = require('fs')
 const chalk = require('chalk')
@@ -92,6 +93,23 @@ const question = (text) => {
 
 async function startXeonBotInc() {
     try {
+        // Restore session from SESSION_ID env variable if session folder is missing
+        const sessionDir = './session';
+        const credsPath = `${sessionDir}/creds.json`;
+        const sessionId = process.env.SESSION_ID;
+
+        if (!fs.existsSync(sessionDir)) fs.mkdirSync(sessionDir, { recursive: true });
+
+        if (sessionId && !fs.existsSync(credsPath)) {
+            try {
+                const decoded = Buffer.from(sessionId, 'base64').toString('utf-8');
+                fs.writeFileSync(credsPath, decoded);
+                console.log(chalk.green('✅ Session restored from SESSION_ID'));
+            } catch (e) {
+                console.log(chalk.red('❌ Failed to restore session from SESSION_ID:', e.message));
+            }
+        }
+
         let { version, isLatest } = await fetchLatestBaileysVersion()
         const { state, saveCreds } = await useMultiFileAuthState(`./session`)
         const msgRetryCounterCache = new NodeCache()
@@ -282,10 +300,10 @@ async function startXeonBotInc() {
             await delay(1999)
             console.log(chalk.yellow(`\n\n                  ${chalk.bold.blue(`[ ${global.botname || settings.botName} ]`)}\n\n`))
             console.log(chalk.cyan(`< ================================================== >`))
-            console.log(chalk.magenta(`\n${global.themeemoji || '•'} YT CHANNEL: MR UNIQUE HACKER`))
-            console.log(chalk.magenta(`${global.themeemoji || '•'} GITHUB: mrunqiuehacker`))
+            console.log(chalk.magenta(`\n${global.themeemoji || '•'} YT CHANNEL: Killadi Chandu`))
+            console.log(chalk.magenta(`${global.themeemoji || '•'} GITHUB: GouthamSER`))
             console.log(chalk.magenta(`${global.themeemoji || '•'} WA NUMBER: ${owner}`))
-            console.log(chalk.magenta(`${global.themeemoji || '•'} CREDIT: MR UNIQUE HACKER`))
+            console.log(chalk.magenta(`${global.themeemoji || '•'} CREDIT: Goutham Josh`))
             console.log(chalk.green(`${global.themeemoji || '•'} 🤖 Bot Connected Successfully! ✅`))
             console.log(chalk.blue(`Bot Version: ${settings.version}`))
         }
