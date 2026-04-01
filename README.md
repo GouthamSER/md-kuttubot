@@ -99,10 +99,13 @@ EliteProTech → Yupra → Okatsu
 
 ## 🚀 Installation
 
-### 1. Clone or extract the project
+### 1. Clone or extract the project / in ubuntu install node 20v 
 
 ```bash
-git clone https://github.com/GouthamJosh/md-kuttubot.git
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+git clone https://github.com/GouthamSER/md-kuttubot.git
 cd md-kuttubot
 ```
 
