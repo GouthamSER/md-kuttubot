@@ -71,13 +71,41 @@ setInterval(() => {
     }
 }, 30_000) // check every 30 seconds
 
-let phoneNumber = "911234567890"
 let owner = JSON.parse(fs.readFileSync('./data/owner.json'))
 
 global.botname = settings.botName
 global.themeemoji = "•"
-const pairingCode = !!phoneNumber || process.argv.includes("--pairing-code")
+const pairingCode = process.argv.includes("--pairing-code")
 const useMobile = process.argv.includes("--mobile")
+
+// QR countdown timer tracker
+let _qrCountdownInterval = null;
+function startQRCountdown(seconds = 60) {
+    if (_qrCountdownInterval) clearInterval(_qrCountdownInterval);
+    let remaining = seconds;
+    // Move to new line after QR code block
+    process.stdout.write('\n');
+    const update = () => {
+        if (remaining <= 0) {
+            clearInterval(_qrCountdownInterval);
+            _qrCountdownInterval = null;
+            process.stdout.write(`\r${chalk.red('⌛ QR expired! Waiting for new QR code...')}          \n`);
+        } else {
+            const bar = '█'.repeat(Math.floor(remaining / 5)) + '░'.repeat(12 - Math.floor(remaining / 5));
+            process.stdout.write(`\r${chalk.yellow(`⏳ QR expires in: `)}${chalk.cyan(`${remaining}s`)} ${chalk.gray(`[${bar}]`)}   `);
+            remaining--;
+        }
+    };
+    update();
+    _qrCountdownInterval = setInterval(update, 1000);
+}
+function clearQRCountdown() {
+    if (_qrCountdownInterval) {
+        clearInterval(_qrCountdownInterval);
+        _qrCountdownInterval = null;
+        process.stdout.write('\n');
+    }
+}
 
 // Only create readline interface if we're in an interactive environment
 const rl = process.stdin.isTTY ? readline.createInterface({ input: process.stdin, output: process.stdout }) : null
@@ -114,10 +142,13 @@ async function startXeonBotInc() {
         const { state, saveCreds } = await useMultiFileAuthState(`./session`)
         const msgRetryCounterCache = new NodeCache()
 
+        // Show QR in terminal only when no session exists yet
+        const hasSession = fs.existsSync('./session/creds.json');
+
         const XeonBotInc = makeWASocket({
             version,
             logger: pino({ level: 'silent' }),
-            printQRInTerminal: !pairingCode,
+            printQRInTerminal: !hasSession && !pairingCode,
             browser: ["Ubuntu", "Chrome", "20.0.04"],
             auth: {
                 creds: state.creds,
@@ -268,7 +299,12 @@ async function startXeonBotInc() {
         const { connection, lastDisconnect, qr } = s
         
         if (qr) {
-            console.log(chalk.yellow('📱 QR Code generated. Please scan with WhatsApp.'))
+            clearQRCountdown();
+            console.log(chalk.cyan('\n╔══════════════════════════════════════╗'));
+            console.log(chalk.cyan('║') + chalk.bold.yellow('   📱 New QR Code — Scan with WhatsApp  ') + chalk.cyan('║'));
+            console.log(chalk.cyan('║') + chalk.gray('   Settings > Linked Devices > Link a Device ') + chalk.cyan('║'));
+            console.log(chalk.cyan('╚══════════════════════════════════════╝'));
+            startQRCountdown(60);
         }
         
         if (connection === 'connecting') {
@@ -276,6 +312,7 @@ async function startXeonBotInc() {
         }
         
         if (connection == "open") {
+            clearQRCountdown();
             console.log(chalk.magenta(` `))
             console.log(chalk.yellow(`🌿Connected to => ` + JSON.stringify(XeonBotInc.user, null, 2)))
 
