@@ -142,13 +142,9 @@ async function startXeonBotInc() {
         const { state, saveCreds } = await useMultiFileAuthState(`./session`)
         const msgRetryCounterCache = new NodeCache()
 
-        // Show QR in terminal only when no session exists yet
-        const hasSession = fs.existsSync('./session/creds.json');
-
         const XeonBotInc = makeWASocket({
             version,
             logger: pino({ level: 'silent' }),
-            printQRInTerminal: !hasSession && !pairingCode,
             browser: ["Ubuntu", "Chrome", "20.0.04"],
             auth: {
                 creds: state.creds,
@@ -300,10 +296,17 @@ async function startXeonBotInc() {
         
         if (qr) {
             clearQRCountdown();
-            console.log(chalk.cyan('\n╔══════════════════════════════════════╗'));
-            console.log(chalk.cyan('║') + chalk.bold.yellow('   📱 New QR Code — Scan with WhatsApp  ') + chalk.cyan('║'));
-            console.log(chalk.cyan('║') + chalk.gray('   Settings > Linked Devices > Link a Device ') + chalk.cyan('║'));
-            console.log(chalk.cyan('╚══════════════════════════════════════╝'));
+            // Manually render QR — printQRInTerminal is deprecated in new Baileys
+            try {
+                const qrTerminal = require('qrcode-terminal');
+                console.log(chalk.cyan('\n╔══════════════════════════════════════╗'));
+                console.log(chalk.cyan('║') + chalk.bold.yellow('   📱 New QR Code — Scan with WhatsApp  ') + chalk.cyan('║'));
+                console.log(chalk.cyan('║') + chalk.gray(' Settings ➜ Linked Devices ➜ Link a Device ') + chalk.cyan('║'));
+                console.log(chalk.cyan('╚══════════════════════════════════════╝\n'));
+                qrTerminal.generate(qr, { small: true });
+            } catch (e) {
+                console.log(chalk.yellow('📱 QR received — install qrcode-terminal to display it'));
+            }
             startQRCountdown(60);
         }
         
