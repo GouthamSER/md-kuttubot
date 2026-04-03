@@ -1,78 +1,64 @@
 <div align="center">
 
-# 🤖 KnightBot-MD
+<img src="assets/bot_image.jpg" alt="MD-KuttuBot" width="150" style="border-radius: 50%"/>
 
-**A fast, lightweight WhatsApp bot built on Baileys**
+# 🤖 MD-KuttuBot
 
-![Version](https://img.shields.io/badge/Version-3.0.7-blue?style=for-the-badge)
-![Node](https://img.shields.io/badge/Node.js-18%2B-green?style=for-the-badge&logo=node.js)
-![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
-![Platform](https://img.shields.io/badge/Platform-WhatsApp-brightgreen?style=for-the-badge&logo=whatsapp)
+**A powerful WhatsApp Bot built on Baileys**
+
+[![Node.js](https://img.shields.io/badge/Node.js-≥18.0.0-green?style=flat-square&logo=node.js)](https://nodejs.org)
+[![Baileys](https://img.shields.io/badge/Baileys-v7.0.0--rc-blue?style=flat-square)](https://github.com/WhiskeySockets/Baileys)
+[![Version](https://img.shields.io/badge/Version-3.0.7-orange?style=flat-square)](https://github.com/GouthamSER/md-kuttubot)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
+
+> Made with ❤️ by **Goutham Josh** • [YouTube](https://youtube.com/@KilladiChandu) • [GitHub](https://github.com/GouthamSER)
 
 </div>
 
 ---
 
-## 📌 About
-
-KnightBot-MD is a clean, minimal WhatsApp bot powered by the [Baileys](https://github.com/WhiskeySockets/Baileys) library.  
-It focuses on **downloader commands** and **group utilities** — no bloat, no unused code.
-
----
-
 ## ✨ Features
 
-| Category | Commands |
-|---|---|
-| 📡 General | `.ping` `.alive` `.help` `.menu` `.list` |
-| 🎵 Audio Download | `.song` `.play` |
-| 🎬 Video Download | `.video` |
-| 📸 Instagram | `.insta` `.instagram` |
-| 📘 Facebook | `.fb` `.facebook` |
-| 👥 Group | `.tagall` |
+- 📱 **QR Code login** with auto-refresh every 60 seconds
+- 🔑 **Pairing code login** via `--pairing-code` flag
+- 💾 **Session persistence** using `SESSION_ID` environment variable (perfect for panel hosting)
+- 🌐 **Built-in web server** on port 8000 for remote QR / pair session
+- 🔒 **Public / Private mode** switchable at runtime
+- 🛡️ **Anti-call**, **ban system**, and **sudo user** support
+- 🧹 **Auto temp cleanup** every 3 hours + RAM watchdog (restarts if >400 MB)
+- ⚡ Lightweight store (no `makeInMemoryStore` — compatible with all Baileys versions)
 
 ---
 
 ## 📋 Commands
 
-### 📡 General
 | Command | Description |
-|---|---|
-| `.ping` | Check bot response speed and uptime |
-| `.alive` | Confirm the bot is online |
-| `.help` / `.menu` / `.list` | Show all available commands |
-
-### 📥 Downloaders
-| Command | Description |
-|---|---|
-| `.song <name or URL>` | Download audio as MP3 (multi-API fallback) |
-| `.play <name>` | Download audio via Keith API |
-| `.video <name or URL>` | Download YouTube video as MP4 |
-| `.insta <link>` | Download Instagram post, reel, or video |
-| `.fb <link>` | Download Facebook video (HD preferred) |
-
-### 👥 Group
-| Command | Description |
-|---|---|
-| `.tagall` | Mention all group members *(Admin only)* |
+|---------|-------------|
+| `.help` / `.menu` / `.list` / `.bot` | Show all commands |
+| `.ping` | Check bot response time |
+| `.alive` | Check if bot is online |
+| `.tagall` | Tag all members in a group *(group admin only)* |
+| `.instagram` / `.insta` / `.ig` | Download Instagram video/reel |
+| `.story` | Download Instagram story |
+| `.facebook` / `.fb` | Download Facebook video |
+| `.tiktok` / `.tt` | Download TikTok video |
+| `.pinterest` / `.pin` | Download / search Pinterest images |
+| `.play` / `.song` / `.mp3` / `.ytmp3` | Download YouTube audio (MP3) |
+| `.music` | Play audio via Keith API |
+| `.video` / `.ytmp4` | Download YouTube video (MP4) |
+| `.tomp3` | Convert video to MP3 |
+| `.mode public` | Allow everyone to use commands |
+| `.mode private` | Restrict commands to owner/sudo only |
 
 ---
 
-## ⚙️ Requirements
+## 🚀 Quick Start
 
-- **Node.js** v18 or higher
-- **FFmpeg** installed on your system
-- A WhatsApp account for pairing
-
----
-
-## 🚀 Installation
-
-### 1. Clone or extract the project
+### 1. Clone the repo
 
 ```bash
-git clone https://github.com/mruniquehacker/Knightbot-MD.git
-cd Knightbot-MD
+git clone https://github.com/GouthamSER/md-kuttubot.git
+cd md-kuttubot
 ```
 
 ### 2. Install dependencies
@@ -81,15 +67,15 @@ cd Knightbot-MD
 npm install
 ```
 
-### 3. Configure your settings
+### 3. Configure the bot
 
-Open `settings.js` and set your details:
+Open `settings.js` and fill in your details:
 
 ```js
 const settings = {
-  botName:     "Knight Bot",       // Bot display name
-  botOwner:    "Your Name",        // Your name
-  ownerNumber: "919876543210",     // Your number (with country code, no + or spaces)
+  botName:     "MD-KuttuBot",
+  botOwner:    "Your Name",
+  ownerNumber: "919876543210",  // Country code + number, no + or spaces
   version:     "3.0.7",
 };
 ```
@@ -100,145 +86,130 @@ const settings = {
 npm start
 ```
 
-On first run you will be prompted for your WhatsApp number to generate a **pairing code**.  
-Open WhatsApp → Settings → Linked Devices → Link a Device → enter the code.
+Scan the QR code that appears in the terminal with WhatsApp:
+**Settings → Linked Devices → Link a Device**
+
+The QR auto-refreshes every 60 seconds until you scan it.
+
+---
+
+## 🔐 Authentication Methods
+
+### Method 1 — QR Code (default)
+
+Just run `npm start`. A QR code prints in the terminal. Scan it within 60 seconds. If it expires, a new one appears automatically.
+
+### Method 2 — Pairing Code
+
+```bash
+node index.js --pairing-code
+```
+
+Enter your WhatsApp number when prompted. A 8-character code appears — enter it in **WhatsApp → Settings → Linked Devices → Link a Device → Link with phone number instead**.
+
+---
+
+## ☁️ Hosting on a Panel (KataBump / Pterodactyl)
+
+The `session/` folder is wiped on every restart. Use the `SESSION_ID` environment variable to persist your session.
+
+**Step 1 — Get your session:**
+1. Start the bot locally with `npm start`
+2. Scan the QR code
+3. After connecting, the bot sends a `creds.json` file to your WhatsApp DM
+
+**Step 2 — Encode it:**
+```bash
+base64 -w 0 session/creds.json
+```
+
+**Step 3 — Set on panel:**
+Add the output as the `SESSION_ID` environment variable in your panel's startup settings.
+
+On every restart the bot will automatically decode `SESSION_ID` and restore the session.
+
+---
+
+## 🌐 Web Session Server
+
+When the bot starts, a web server launches at `http://localhost:8000`.
+
+| Route | Description |
+|-------|-------------|
+| `GET /qr` | Get a QR code as an image (JSON response) |
+| `GET /pair` | Get a pairing code for your number |
+
+This is useful for remote deployments where you can't see the terminal.
 
 ---
 
 ## 📁 Project Structure
 
 ```
-KnightBot-MD/
-│
-├── commands/          # Command handlers
+md-kuttubot/
+├── index.js          # Entry point — bot startup & connection handling
+├── main.js           # Message router & command dispatcher
+├── settings.js       # Bot configuration
+├── config.js         # Global config loader
+├── commands/         # Individual command files
 │   ├── alive.js
-│   ├── facebook.js
 │   ├── help.js
 │   ├── instagram.js
-│   ├── ping.js
-│   ├── play.js
+│   ├── tiktok.js
 │   ├── song.js
-│   ├── tagall.js
-│   └── video.js
-│
-├── lib/               # Core utilities
-│   ├── cleanTemp.js   # Auto temp file cleaner
-│   ├── converter.js   # FFmpeg audio/video converter
-│   ├── isAdmin.js
-│   ├── isBanned.js
-│   ├── isOwner.js
 │   └── ...
-│
-├── data/              # Persistent JSON data
-│   ├── banned.json
-│   ├── messageCount.json
-│   └── owner.json
-│
-├── session/           # WhatsApp session credentials (auto-generated)
-├── temp/              # Temp files (auto-cleaned after every download)
-├── assets/            # Bot images
-├── index.js           # Entry point & WhatsApp connection
-├── main.js            # Message handler & command router
-├── settings.js        # Bot configuration
-└── package.json
+├── server/           # Web server for QR / pair session
+│   ├── index.js
+│   ├── qr.js
+│   └── pair.js
+├── lib/              # Utility functions
+├── data/             # Runtime data (owner, banned users, mode)
+├── session/          # WhatsApp session files (auto-created)
+└── temp/             # Temporary media files (auto-cleaned)
 ```
 
 ---
 
-## 🔄 How Downloaders Work
+## ⚙️ Environment Variables
 
-Each downloader uses a **multi-API fallback chain** — if the first API fails, it automatically tries the next:
-
-**Audio (`.song` / `.play`)**
-```
-EliteProTech → Yupra → Okatsu
-```
-
-**Video (`.video`)**
-```
-EliteProTech → Yupra → Okatsu
-```
-
-**Facebook (`.fb`)**
-```
-Hanggts → Snapsave → Getmyfb
-```
-
-**Instagram (`.insta`)**
-```
-ruhend-scraper (handles posts, reels, stories, carousels)
-```
-
-### 🧹 Auto Temp Cleanup
-
-Every download command **immediately deletes all temp files** after sending — both on success and on error.  
-This keeps your server storage clean with zero leftover files.
+| Variable | Description |
+|----------|-------------|
+| `SESSION_ID` | Base64-encoded `creds.json` for session restore on panel hosting |
+| `PORT` | Web server port (default: `8000`) |
 
 ---
 
-## 🛡️ Bot Modes
+## 🛠️ npm Scripts
 
-| Mode | Behavior |
-|---|---|
-| `public` | Anyone can use commands |
-| `private` | Only owner/sudo can use commands |
-
-Switch modes with:
-```
-.mode public
-.mode private
-```
+| Script | Description |
+|--------|-------------|
+| `npm start` | Start the bot normally |
+| `npm run start:optimized` | Start with memory limits (recommended for VPS) |
+| `npm run start:clean` | Clean temp files then start |
+| `npm run start:fresh` | Delete session and start fresh |
 
 ---
 
-## 🔧 Configuration (`settings.js`)
+## 📦 Requirements
 
-| Key | Description | Example |
-|---|---|---|
-| `botName` | Bot display name | `"Knight Bot"` |
-| `botOwner` | Owner name | `"Professor"` |
-| `ownerNumber` | Owner phone (no + or spaces) | `"919876543210"` |
-| `packname` | Sticker pack name | `"Knight Bot"` |
-| `version` | Bot version | `"3.0.7"` |
-
----
-
-## 🐛 Troubleshooting
-
-**Bot not connecting?**
-- Make sure your `session/` folder has valid credentials
-- Delete the `session/` folder and re-pair if needed
-
-**Downloads failing?**
-- Check your internet connection on the server
-- Some content may be region-blocked (the bot will notify you)
-- Try a different search term or URL
-
-**FFmpeg errors?**
-- Install FFmpeg: `sudo apt install ffmpeg` (Linux) or download from [ffmpeg.org](https://ffmpeg.org)
-- Verify with: `ffmpeg -version`
-
-**Tagall not working?**
-- Make sure the bot is added as a **group admin**
-
----
-
-## 📜 License
-
-This project is licensed under the **MIT License** — free to use, modify, and distribute.
+- **Node.js** v18.0.0 or higher
+- **npm** v8+
+- A WhatsApp account to link
 
 ---
 
 ## 🙏 Credits
 
-- **Baileys** — WhatsApp Web API library by [@adiwajshing](https://github.com/adiwajshing)
-- **Original bot** — [KnightBot-MD](https://github.com/mruniquehacker/Knightbot-MD) by Mr Unique Hacker
-- **YT Channel** — [Mr Unique Hacker](https://youtube.com)
+- [WhiskeySockets/Baileys](https://github.com/WhiskeySockets/Baileys) — WhatsApp Web API library
+- Pair code implementation inspired by **TechGod143** & **DGXEON**
+- Built and maintained by **Goutham Josh**
 
 ---
 
 <div align="center">
 
-**Made with ❤️ by Mr Unique Hacker**
+**⭐ Star this repo if you find it useful!**
+
+[YouTube](https://youtube.com/@KilladiChandu) • [GitHub](https://github.com/GouthamSER) • [WhatsApp Channel](https://whatsapp.com/channel/0029Va90zAnIHphOuO8Msp3A)
 
 </div>
